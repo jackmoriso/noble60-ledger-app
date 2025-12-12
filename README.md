@@ -16,6 +16,24 @@ This repository provides a simplified, Docker-based build system for creating No
 - Generates both device binaries (.hex) and simulator binaries (.elf)
 - SHA-256 checksums for build integrity verification
 
+## Background
+
+This project is based on the mature, production-tested [Zondax ledger-cosmos](https://github.com/Zondax/ledger-cosmos) source code, which has been extensively audited and used by millions of Cosmos ecosystem users.
+
+**Why Noble60?**
+
+Noble blockchain requires a specialized Ledger app because it uses **BIP-60 (Ethereum's derivation path)** instead of the standard Cosmos **BIP-118** derivation path. This is not just a cosmetic difference - it solves a critical user problem:
+
+**The Problem**: Noble users cannot sign transactions for addresses derived from the `m/44'/60'` path using the standard Cosmos Ledger app, which only supports `m/44'/118'`.
+
+**Our Solution**: We made only **two minimal modifications** to the proven Cosmos app:
+1. **Changed the app name** from "Cosmos" to "Noble60" for clear differentiation
+2. **Changed the derivation path** from `m/44'/118'` to `m/44'/60'` to match Noble's address generation
+
+By leveraging Zondax's battle-tested codebase with these targeted modifications, we provide Noble users with a secure, reliable way to manage their assets on Ledger hardware wallets.
+
+For complete details on our modifications, see [MODIFICATIONS.md](MODIFICATIONS.md).
+
 ## Noble60 App Specifications
 
 | Property | Value |
