@@ -81,6 +81,8 @@ ledger-noble60-builder/
 │       └── app.sha256
 ├── build-api22.sh         # Build script for API Level 22
 ├── build-api25.sh         # Build script for API Level 25
+├── installer_api22.sh     # Self-contained installer for API Level 22
+├── installer_api25.sh     # Self-contained installer for API Level 25
 └── README.md              # This file
 ```
 
@@ -117,6 +119,17 @@ Check your Ledger firmware version in Ledger Live:
 After a successful build, find your binaries in:
 - `builds/api22/` for firmware 1.3.1/1.3.2
 - `builds/api25/` for firmware 1.5.0
+
+### 5. Install to Your Device (Optional)
+
+Use the self-contained installer scripts to install the app:
+```bash
+./installer_api22.sh load   # For firmware 1.3.1/1.3.2
+# OR
+./installer_api25.sh load   # For firmware 1.5.0
+```
+
+For more installation options, see the [Using the Built Binaries](#using-the-built-binaries) section.
 
 ## Build Scripts
 
@@ -160,13 +173,42 @@ Builds the Noble60 app for firmware 1.5.0 using API Level 25.
 
 ### Install to Physical Ledger Device
 
-After building, you can install the app to your Ledger device using `ledgerblue`:
+#### Method 1: Using Self-Contained Installer Scripts (Recommended)
+
+After building, you can use the self-contained installer scripts that include the app binary:
+
+**For Firmware 1.3.1/1.3.2 (API Level 22):**
+```bash
+./installer_api22.sh load
+```
+
+**For Firmware 1.5.0 (API Level 25):**
+```bash
+./installer_api25.sh load
+```
+
+The installer scripts provide:
+- Self-contained installation (includes app binary)
+- Clear installation progress and status messages
+- Built-in prerequisites checking
+- Easy uninstallation: `./installer_api22.sh delete`
+
+**Installer Commands:**
+```bash
+./installer_api22.sh load      # Install app to device
+./installer_api22.sh delete    # Remove app from device
+./installer_api22.sh version   # Show app version
+```
+
+#### Method 2: Manual Installation with ledgerblue
+
+Alternatively, you can install directly from the build output using `ledgerblue`:
 
 ```bash
 # Activate Python environment (if you have one)
 source ~/ledger-env/bin/activate
 
-# Install the app
+# Install the app for firmware 1.5.0 (API Level 25)
 python3 -m ledgerblue.loadApp \
   --targetId 0x33100004 \
   --targetVersion="1.5.0" \
@@ -178,12 +220,16 @@ python3 -m ledgerblue.loadApp \
   --path "44'/60'" \
   --curve secp256k1 \
   --tlv
+
+# For firmware 1.3.1/1.3.2 (API Level 22), use:
+# --targetVersion="1.3.1" and --apiLevel 22 and --fileName builds/api22/app.hex
 ```
 
 **Important:**
 - Ensure your Ledger is **unlocked** and on the home screen
 - The device must be connected via USB
 - Backup your recovery phrase before installation
+- Python 3 and `ledgerblue` package must be installed: `pip install ledgerblue`
 
 ### Test with Speculos Simulator
 
