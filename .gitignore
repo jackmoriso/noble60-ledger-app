@@ -1,5 +1,6 @@
 # Build outputs
-builds/
+# Note: builds/ directory contains pre-built binaries from noble-ledger-toolkit
+# These are working binaries that should be committed to the repository
 
 # Ledger source build artifacts
 ledger-cosmos/app/bin/

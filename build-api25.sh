@@ -86,6 +86,10 @@ docker run --rm \
   -w /app/app \
   ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest \
   bash -c "
+    echo 'Cleaning previous build artifacts inside Docker...'
+    BOLOS_SDK=/opt/nanosplus-secure-sdk make clean COIN=NOBLE 2>&1 || true
+    rm -rf bin/ debug/ output/ build/ 2>&1 || true
+    echo ''
     echo 'Building for API Level ${API_LEVEL}...'
     BOLOS_SDK=/opt/nanosplus-secure-sdk make COIN=NOBLE 2>&1
   " || true
