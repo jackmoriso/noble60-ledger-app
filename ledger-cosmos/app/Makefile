@@ -22,11 +22,8 @@ endif
 
 MY_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 
-.PHONY: setup_dirs
-setup_dirs:
+all:
 	@mkdir -p $(CURDIR)/pkg $(CURDIR)/output $(CURDIR)/bin $(CURDIR)/debug
-
-all: default setup_dirs
 	@echo "#!/usr/bin/env bash" > $(OUTPUT_INSTALLER) || true
 	@echo "APPNAME=\"${APPNAME}\"" >> $(OUTPUT_INSTALLER) || true
 	@echo "APPVERSION=\"${APPVERSION}\"" >> $(OUTPUT_INSTALLER) || true
