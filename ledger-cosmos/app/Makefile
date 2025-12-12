@@ -22,22 +22,21 @@ endif
 
 MY_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 
-all:
-	@mkdir -p $(CURDIR)/pkg $(CURDIR)/output $(CURDIR)/bin $(CURDIR)/debug
-	@echo "#!/usr/bin/env bash" > $(OUTPUT_INSTALLER) || true
-	@echo "APPNAME=\"${APPNAME}\"" >> $(OUTPUT_INSTALLER) || true
-	@echo "APPVERSION=\"${APPVERSION}\"" >> $(OUTPUT_INSTALLER) || true
-	@echo "APPPATH=\""${APPPATH}"\"" >> $(OUTPUT_INSTALLER) || true
-	@echo "LOAD_PARAMS=\"${COMMON_LOAD_PARAMS}\"" >> $(OUTPUT_INSTALLER) || true
-	@echo "DELETE_PARAMS=\"${COMMON_DELETE_PARAMS}\"" >> $(OUTPUT_INSTALLER) || true
-	@echo "APPHEX=\"" >> $(OUTPUT_INSTALLER) || true
-	@cat $(CURDIR)/bin/app.hex >> $(OUTPUT_INSTALLER) || true
-	@echo "\"" >> $(OUTPUT_INSTALLER) || true
-	@if [ -f "$(CURDIR)/../deps/ledger-zxlib/scripts/template.sh" ]; then cat $(CURDIR)/../deps/ledger-zxlib/scripts/template.sh >> $(OUTPUT_INSTALLER); fi
-	@chmod +x $(OUTPUT_INSTALLER) || true
-	@cp $(CURDIR)/bin/* $(CURDIR)/output || true
-	@if [ -f "$(CURDIR)/output/app.elf" ]; then cp $(CURDIR)/output/app.elf ${OUTPUT_ELF}; fi
-	@rm -f $(CURDIR)/output/app.elf
+all: bin/app.elf
+	@echo "#!/usr/bin/env bash" > $(OUTPUT_INSTALLER)
+	@echo "APPNAME=\"${APPNAME}\"" >> $(OUTPUT_INSTALLER)
+	@echo "APPVERSION=\"${APPVERSION}\"" >> $(OUTPUT_INSTALLER)
+	@echo "APPPATH=\""${APPPATH}"\"" >> $(OUTPUT_INSTALLER)
+	@echo "LOAD_PARAMS=\"${COMMON_LOAD_PARAMS}\"" >> $(OUTPUT_INSTALLER)
+	@echo "DELETE_PARAMS=\"${COMMON_DELETE_PARAMS}\"" >> $(OUTPUT_INSTALLER)
+	@echo "APPHEX=\"" >> $(OUTPUT_INSTALLER)
+	@cat $(CURDIR)/bin/app.hex >> $(OUTPUT_INSTALLER)
+	@echo "\"" >> $(OUTPUT_INSTALLER)
+	-@cat $(CURDIR)/../deps/ledger-zxlib/scripts/template.sh >> $(OUTPUT_INSTALLER) 2>/dev/null || true
+	@chmod +x $(OUTPUT_INSTALLER)
+	@cp $(CURDIR)/bin/* $(CURDIR)/output
+	@cp $(CURDIR)/output/app.elf ${OUTPUT_ELF}
+	@rm $(CURDIR)/output/app.elf
 
 include $(BOLOS_SDK)/Makefile.defines
 include $(CURDIR)/Makefile.version
@@ -63,7 +62,7 @@ ifeq ($(COIN),ATOM)
 APPNAME = "Cosmos"
 APPPATH = "44'/118'"
 else ifeq ($(COIN),NOBLE)
-# Noble BIP-60 configuration
+# Noble BIP-60 configuration - 访问 BIP-60 Noble 地址
 APPNAME = "Noble60"
 APPPATH = "44'/60'"
 else
@@ -232,4 +231,4 @@ dep/%.d: %.c Makefile
 
 .PHONY: listvariants
 listvariants:
-	@echo VARIANTS COIN ATOM
+	@echo VARIANTS COIN ATOM NOBLE

@@ -166,7 +166,7 @@ uint8_t extractHRP(uint32_t rx, uint32_t offset) {
 void ripemd160_32(uint8_t *out, uint8_t *in) {
     cx_ripemd160_t rip160;
     cx_ripemd160_init(&rip160);
-    cx_hash(&rip160.header, CX_LAST, in, CX_SHA256_SIZE, out, CX_RIPEMD160_SIZE);
+    cx_hash_no_throw(&rip160.header, CX_LAST, in, CX_SHA256_SIZE, out, CX_RIPEMD160_SIZE);
 }
 
 void crypto_set_hrp(char *p) {
