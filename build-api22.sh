@@ -58,6 +58,23 @@ if ! docker info > /dev/null 2>&1; then
     exit 1
 fi
 
+# Initialize git repository in ledger-cosmos if it doesn't exist
+# This is required by Ledger SDK to generate proper hex files
+echo -e "${YELLOW}Checking git repository in ledger-cosmos...${NC}"
+if [ ! -d "${SOURCE_DIR}/.git" ]; then
+    echo -e "${YELLOW}Initializing git repository (required by Ledger SDK)...${NC}"
+    cd "${SOURCE_DIR}"
+    git init
+    git add -A
+    git config user.email "build@noble60.local"
+    git config user.name "Noble60 Builder"
+    git commit -m "Initial commit for build"
+    cd "${PROJECT_DIR}"
+    echo -e "${GREEN}Git repository initialized successfully${NC}"
+else
+    echo -e "${GREEN}Git repository already exists${NC}"
+fi
+
 # Create output directory
 echo -e "${YELLOW}Creating output directory...${NC}"
 mkdir -p "${OUTPUT_DIR}"
