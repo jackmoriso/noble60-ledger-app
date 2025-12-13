@@ -1,340 +1,110 @@
-# Noble60 Ledger App Builder
+# Noble60 Ledger App
 
-Build system for the Noble60 Ledger application with BIP-60 derivation path support for Ledger Nano S Plus devices.
+**Ledger application for Noble blockchain with BIP-60 (Ethereum derivation path) support**
+
+[![GitHub](https://img.shields.io/badge/GitHub-initia--labs%2Fnoble60--ledger--app-blue)](https://github.com/initia-labs/noble60-ledger-app)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 ## Overview
 
-This repository provides a simplified, Docker-based build system for creating Noble60 Ledger app binaries for two different firmware versions:
-
-- **API Level 22**: For firmware 1.3.1 and 1.3.2
-- **API Level 25**: For firmware 1.5.0
+Noble60 is a specialized Ledger application for the Noble blockchain that uses **BIP-60 (m/44'/60')** derivation path instead of the standard Cosmos **BIP-118 (m/44'/118')** path. This enables Noble users to manage their assets using Ledger hardware wallets with addresses derived from the Ethereum-compatible path.
 
 **Key Features:**
-- Docker-based builds (no local SDK installation required)
-- Automated build scripts with safety checks
-- Support for multiple firmware versions
-- Generates both device binaries (.hex) and simulator binaries (.elf)
-- SHA-256 checksums for build integrity verification
+- ✅ BIP-60 (m/44'/60') derivation path support
+- ✅ Compatible with Ledger Nano S Plus
+- ✅ Supports firmware 1.3.1, 1.3.2, and 1.5.0
+- ✅ Docker-based build system (no local SDK required)
+- ✅ Pre-built releases available for convenience
+- ✅ Production-ready source code based on audited Zondax ledger-cosmos
 
-## Background
+## Quick Start
 
-This project is based on the mature, production-tested [Zondax ledger-cosmos](https://github.com/Zondax/ledger-cosmos) source code, which has been extensively audited and used by millions of Cosmos ecosystem users.
+### Option 1: Use Pre-built Releases (Recommended)
 
-**Why Noble60?**
+Download pre-built binaries from the [releases](releases/) directory:
 
-Noble blockchain requires a specialized Ledger app because it uses **BIP-60 (Ethereum's derivation path)** instead of the standard Cosmos **BIP-118** derivation path. This is not just a cosmetic difference - it solves a critical user problem:
+- **[v2.32.1-api25](releases/v2.32.1-api25/)** - For firmware 1.5.0
+- **[v2.32.1-api22](releases/v2.32.1-api22/)** - For firmware 1.3.1/1.3.2
 
-**The Problem**: Noble users cannot sign transactions for addresses derived from the `m/44'/60'` path using the standard Cosmos Ledger app, which only supports `m/44'/118'`.
+See [Installation Guide](#installation) for details.
 
-**Our Solution**: We made only **two minimal modifications** to the proven Cosmos app:
-1. **Changed the app name** from "Cosmos" to "Noble60" for clear differentiation
-2. **Changed the derivation path** from `m/44'/118'` to `m/44'/60'` to match Noble's address generation
+### Option 2: Build from Source
 
-By leveraging Zondax's battle-tested codebase with these targeted modifications, we provide Noble users with a secure, reliable way to manage their assets on Ledger hardware wallets.
+```bash
+# Clone the repository
+git clone https://github.com/initia-labs/noble60-ledger-app
+cd noble60-ledger-app
 
-For complete details on our modifications, see [MODIFICATIONS.md](MODIFICATIONS.md).
+# Build for your firmware version
+./build-api25.sh  # For firmware 1.5.0
+# or
+./build-api22.sh  # For firmware 1.3.1/1.3.2
+```
 
-## Noble60 App Specifications
+## App Specifications
 
 | Property | Value |
 |----------|-------|
 | **App Name** | Noble60 |
-| **App Version** | 2.32.1 |
-| **Derivation Path** | m/44'/60' (BIP-60) |
+| **Version** | 2.32.1 |
+| **Derivation Path** | m/44'/60' (BIP-60, Ethereum-compatible) |
 | **Target Device** | Ledger Nano S Plus |
 | **Supported Firmware** | 1.3.1, 1.3.2, 1.5.0 |
-| **Elliptic Curve** | secp256k1 |
-| **Chain ID** | noble-1 |
+| **Curve** | secp256k1 |
 | **Address Prefix** | noble1 |
+
+## Why Noble60?
+
+### The Problem
+
+Noble blockchain uses the **BIP-60 (Ethereum) derivation path** for address generation, but the standard Cosmos Ledger app only supports **BIP-118** paths. This means Noble users cannot sign transactions for their addresses using the standard Cosmos app.
+
+### Our Solution
+
+Noble60 is built on top of the proven, audited [Zondax ledger-cosmos](https://github.com/Zondax/ledger-cosmos) codebase with **only two minimal modifications**:
+
+1. **Changed app name**: From "Cosmos" to "Noble60"
+2. **Changed derivation path**: From `m/44'/118'` to `m/44'/60'`
+
+By reusing Zondax's battle-tested code with these targeted changes, we provide a secure and reliable solution for Noble users.
 
 ## Requirements
 
-### System Requirements
+### For Using Pre-built Releases
 
-- **Docker** installed and running
-- **macOS, Linux, or Windows** with Docker support
-- At least 4GB of free disk space
-- Internet connection (for pulling Docker images)
+- Ledger Nano S Plus with firmware 1.3.1, 1.3.2, or 1.5.0
+- Python 3.7 or higher
+- `ledgerblue` Python package: `pip3 install ledgerblue`
 
-### Verify Docker Installation
+### For Building from Source
 
+- Docker installed and running
+- At least 4GB free disk space
+- Internet connection
+
+Verify Docker installation:
 ```bash
 docker --version
 docker info
 ```
 
-## Repository Structure
+## Installation
 
-```
-ledger-noble60-builder/
-├── ledger-cosmos/          # Source code (Zondax ledger-cosmos with Noble modifications)
-│   └── app/
-│       └── Makefile        # Modified to support COIN=NOBLE
-├── builds/                 # Build outputs (created during builds)
-│   ├── api22/             # Firmware 1.3.1/1.3.2 builds
-│   │   ├── app.hex        # Binary for physical Ledger
-│   │   ├── app.elf        # Binary for Speculos simulator
-│   │   └── app.sha256     # SHA-256 checksums
-│   └── api25/             # Firmware 1.5.0 builds
-│       ├── app.hex
-│       ├── app.elf
-│       └── app.sha256
-├── build-api22.sh         # Build script for API Level 22
-├── build-api25.sh         # Build script for API Level 25
-├── installer_api22.sh     # Self-contained installer for API Level 22
-├── installer_api25.sh     # Self-contained installer for API Level 25
-└── README.md              # This file
-```
+### Step 1: Check Your Firmware Version
 
-## Quick Start
+1. Open Ledger Live
+2. Go to **Manager** → Your device
+3. Check your firmware version
 
-### 1. Clone This Repository
+### Step 2: Choose the Correct Release
+
+- **Firmware 1.5.0** → Use [v2.32.1-api25](releases/v2.32.1-api25/)
+- **Firmware 1.3.1 or 1.3.2** → Use [v2.32.1-api22](releases/v2.32.1-api22/)
+
+### Step 3: Verify Checksums
 
 ```bash
-git clone <repository-url>
-cd ledger-noble60-builder
-```
-
-### 2. Choose Your Firmware Version
-
-Check your Ledger firmware version in Ledger Live:
-
-- **Firmware 1.3.1 or 1.3.2**: Use `build-api22.sh`
-- **Firmware 1.5.0**: Use `build-api25.sh`
-
-### 3. Run the Build Script
-
-**For Firmware 1.3.1/1.3.2 (API Level 22):**
-```bash
-./build-api22.sh
-```
-
-**For Firmware 1.5.0 (API Level 25):**
-```bash
-./build-api25.sh
-```
-
-### 4. Find Your Binaries
-
-After a successful build, find your binaries in:
-- `builds/api22/` for firmware 1.3.1/1.3.2
-- `builds/api25/` for firmware 1.5.0
-
-### 5. Install to Your Device (Optional)
-
-Use the self-contained installer scripts to install the app:
-```bash
-./installer_api22.sh load   # For firmware 1.3.1/1.3.2
-# OR
-./installer_api25.sh load   # For firmware 1.5.0
-```
-
-For more installation options, see the [Using the Built Binaries](#using-the-built-binaries) section.
-
-## Build Scripts
-
-### build-api22.sh
-
-Builds the Noble60 app for firmware 1.3.1/1.3.2 using API Level 22.
-
-**Features:**
-- Automatic Docker image pulling
-- Clean build environment
-- Progress output with colors
-- Error handling and validation
-- SHA-256 checksum generation
-
-**Usage:**
-```bash
-./build-api22.sh
-```
-
-**Output:**
-```
-builds/api22/
-├── app.hex       # 149 KB - Install to physical Ledger
-├── app.elf       # 148 KB - Use with Speculos simulator
-├── app.apdu      # 111 KB - APDU command sequence
-└── app.sha256    # SHA-256 checksums
-```
-
-### build-api25.sh
-
-Builds the Noble60 app for firmware 1.5.0 using API Level 25.
-
-**Usage:**
-```bash
-./build-api25.sh
-```
-
-**Output:** Same structure as API 22, in `builds/api25/`
-
-## Using the Built Binaries
-
-### Install to Physical Ledger Device
-
-#### Method 1: Using Self-Contained Installer Scripts (Recommended)
-
-After building, you can use the self-contained installer scripts that include the app binary:
-
-**For Firmware 1.3.1/1.3.2 (API Level 22):**
-```bash
-./installer_api22.sh load
-```
-
-**For Firmware 1.5.0 (API Level 25):**
-```bash
-./installer_api25.sh load
-```
-
-The installer scripts provide:
-- Self-contained installation (includes app binary)
-- Clear installation progress and status messages
-- Built-in prerequisites checking
-- Easy uninstallation: `./installer_api22.sh delete`
-
-**Installer Commands:**
-```bash
-./installer_api22.sh load      # Install app to device
-./installer_api22.sh delete    # Remove app from device
-./installer_api22.sh version   # Show app version
-```
-
-#### Method 2: Manual Installation with ledgerblue
-
-Alternatively, you can install directly from the build output using `ledgerblue`:
-
-```bash
-# Activate Python environment (if you have one)
-source ~/ledger-env/bin/activate
-
-# Install the app for firmware 1.5.0 (API Level 25)
-python3 -m ledgerblue.loadApp \
-  --targetId 0x33100004 \
-  --targetVersion="1.5.0" \
-  --apiLevel 25 \
-  --fileName builds/api25/app.hex \
-  --appName "Noble60" \
-  --appVersion "2.32.1" \
-  --appFlags 0x200 \
-  --path "44'/60'" \
-  --curve secp256k1 \
-  --tlv
-
-# For firmware 1.3.1/1.3.2 (API Level 22), use:
-# --targetVersion="1.3.1" and --apiLevel 22 and --fileName builds/api22/app.hex
-```
-
-**Important:**
-- Ensure your Ledger is **unlocked** and on the home screen
-- The device must be connected via USB
-- Backup your recovery phrase before installation
-- Python 3 and `ledgerblue` package must be installed: `pip install ledgerblue`
-
-### Test with Speculos Simulator
-
-You can test the app without a physical device using Speculos:
-
-```bash
-docker run --rm -it \
-  -v "$(pwd)/builds/api22:/app" \
-  -p 6699:6699 -p 6690:6690 -p 6601:5000 \
-  ghcr.io/ledgerhq/speculos:latest \
-  --model nanosp \
-  --apdu-port 6699 \
-  --vnc-port 6690 \
-  --display headless \
-  /app/app.elf
-```
-
-Then access the simulator at http://localhost:6601
-
-## Build Process Details
-
-### What Happens During Build
-
-1. **Environment Check**
-   - Verifies Docker is running
-   - Checks source directory exists
-   - Creates output directory
-
-2. **Clean Previous Build**
-   - Removes old build artifacts
-   - Ensures clean build environment
-
-3. **Docker Build**
-   - Pulls latest Ledger SDK image
-   - Mounts source code into container
-   - Runs `make COIN=NOBLE` with appropriate SDK
-
-4. **Artifact Collection**
-   - Copies `.hex`, `.elf`, and `.apdu` files
-   - Generates SHA-256 checksums
-   - Displays build summary
-
-### Build Configuration
-
-The builds use the following configuration:
-
-| Parameter | Value |
-|-----------|-------|
-| **COIN** | NOBLE |
-| **APPNAME** | Noble60 |
-| **APPPATH** | 44'/60' |
-| **TARGET** | nanosp (Nano S Plus) |
-| **BOLOS_SDK** | /opt/nanosplus-secure-sdk |
-| **Docker Image** | ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest |
-
-## Troubleshooting
-
-### Docker Not Running
-
-**Error:**
-```
-Error: Docker is not running
-Please start Docker and try again.
-```
-
-**Solution:**
-- Start Docker Desktop (macOS/Windows)
-- Or start Docker service (Linux): `sudo systemctl start docker`
-
-### Build Failed
-
-**Error:**
-```
-Error: app.hex not found. Build may have failed.
-```
-
-**Solutions:**
-1. Check Docker logs for errors
-2. Ensure you have enough disk space
-3. Try cleaning and rebuilding:
-   ```bash
-   cd ledger-cosmos/app
-   make clean
-   cd ../..
-   ./build-api22.sh
-   ```
-
-### Source Directory Not Found
-
-**Error:**
-```
-Error: Source directory not found: ./ledger-cosmos
-```
-
-**Solution:**
-- Ensure you're running the script from the project root
-- The `ledger-cosmos` directory should be present
-- If missing, re-clone the repository
-
-## Verifying Build Integrity
-
-After building, verify the checksums:
-
-```bash
-cd builds/api22  # or api25
+cd releases/v2.32.1-api25  # or v2.32.1-api22
 shasum -a 256 -c app.sha256
 ```
 
@@ -344,83 +114,243 @@ app.hex: OK
 app.elf: OK
 ```
 
-## Modifications from Original Source
+### Step 4: Install the App
 
-This repository modifies the original Zondax ledger-cosmos source code:
-
-**Changes to `ledger-cosmos/app/Makefile` (lines 60-77):**
-```makefile
-ifeq ($(COIN),ATOM)
-# Main app configuration
-APPNAME = "Cosmos"
-APPPATH = "44'/118'"
-else ifeq ($(COIN),NOBLE)
-# Noble BIP-60 configuration
-APPNAME = "Noble60"
-APPPATH = "44'/60'"
-else
-$(error "COIN value not supported")
-endif
-```
-
-This adds support for building with `COIN=NOBLE` to use the BIP-60 derivation path.
-
-## Development
-
-### Modifying the Build
-
-To customize the build:
-
-1. Edit `ledger-cosmos/app/Makefile` for build configuration
-2. Edit `build-api22.sh` or `build-api25.sh` for build process
-3. Test your changes:
-   ```bash
-   ./build-api22.sh
-   ```
-
-### Building from Different Source
-
-To use a different source branch:
+**For Firmware 1.5.0 (API Level 25):**
 
 ```bash
-cd ledger-cosmos
-git checkout <branch-name>
-cd ..
+python3 -m ledgerblue.loadApp \
+  --targetId 0x33100004 \
+  --targetVersion="1.5.0" \
+  --apiLevel 25 \
+  --fileName releases/v2.32.1-api25/app.hex \
+  --appName "Noble60" \
+  --appVersion "2.32.1" \
+  --appFlags 0x200 \
+  --path "44'/60'" \
+  --curve secp256k1 \
+  --tlv
+```
+
+**For Firmware 1.3.1/1.3.2 (API Level 22):**
+
+```bash
+python3 -m ledgerblue.loadApp \
+  --targetId 0x33100004 \
+  --targetVersion="1.3.1" \
+  --apiLevel 22 \
+  --fileName releases/v2.32.1-api22/app.hex \
+  --appName "Noble60" \
+  --appVersion "2.32.1" \
+  --appFlags 0x200 \
+  --path "44'/60'" \
+  --curve secp256k1 \
+  --tlv
+```
+
+**Important:**
+- Make sure your Ledger device is **unlocked** and on the home screen
+- The device must be connected via USB
+- Follow the on-screen prompts on your Ledger device
+
+## Building from Source
+
+### Repository Structure
+
+```
+noble60-ledger-app/
+├── ledger-cosmos/          # Source code (Zondax ledger-cosmos with Noble mods)
+│   ├── app/
+│   │   ├── Makefile        # Modified to support COIN=NOBLE
+│   │   └── src/            # Application source code
+│   └── deps/               # Dependencies
+├── releases/               # Pre-built binaries
+│   ├── v2.32.1-api25/     # For firmware 1.5.0
+│   └── v2.32.1-api22/     # For firmware 1.3.1/1.3.2
+├── build-api22.sh          # Build script for API 22
+├── build-api25.sh          # Build script for API 25
+└── README.md
+```
+
+### Build Scripts
+
+#### Building for Firmware 1.5.0 (API Level 25)
+
+```bash
+./build-api25.sh
+```
+
+Output files in `builds/api25/`:
+- `app.hex` (149KB) - Binary for physical Ledger device
+- `app.elf` (148KB) - Binary for Speculos simulator
+- `app.sha256` - SHA-256 checksums
+
+#### Building for Firmware 1.3.1/1.3.2 (API Level 22)
+
+```bash
 ./build-api22.sh
 ```
 
-## Support and Resources
+Output files in `builds/api22/`:
+- `app.hex` (149KB) - Binary for physical Ledger device
+- `app.elf` (148KB) - Binary for Speculos simulator
+- `app.sha256` - SHA-256 checksums
 
-### Official Resources
-- **Noble Blockchain**: https://nobleassets.xyz
-- **Noble Documentation**: https://docs.initia.xyz
-- **Ledger Developer Docs**: https://developers.ledger.com
-- **Zondax ledger-cosmos**: https://github.com/Zondax/ledger-cosmos
+### How the Build Works
 
-### Getting Help
-- For build issues: Check Docker logs and verify requirements
-- For Ledger issues: Consult Ledger documentation
-- For Noble-specific questions: Visit Noble community channels
+1. **Git Repository Initialization**
+   - Automatically initializes a git repository in `ledger-cosmos/` if not present
+   - **Why:** Ledger SDK requires git to generate proper hex files
+   - Without git: Only 210-byte TLV metadata is generated
+   - With git: Full 149KB Intel HEX format with machine code
+
+2. **Docker Build**
+   - Uses official Ledger SDK Docker image
+   - Mounts source code into the container
+   - Runs `make COIN=NOBLE` with the appropriate SDK version
+
+3. **Artifact Generation**
+   - Copies compiled binaries to `builds/` directory
+   - Generates SHA-256 checksums for verification
+
+### Build Configuration
+
+The builds use these parameters:
+
+| Parameter | Value |
+|-----------|-------|
+| **COIN** | NOBLE |
+| **APPNAME** | Noble60 |
+| **APPPATH** | 44'/60' |
+| **TARGET** | nanosp (Nano S Plus) |
+| **BOLOS_SDK** | /opt/nanosplus-secure-sdk |
+| **Docker Image** | ghcr.io/ledgerhq/ledger-app-builder:latest |
+
+## Testing with Speculos Simulator
+
+Test the app without a physical device using the Speculos simulator:
+
+```bash
+docker run --rm -it \
+  -v "$(pwd)/builds/api25:/app" \
+  -p 6699:6699 -p 6690:6690 -p 6601:5000 \
+  ghcr.io/ledgerhq/speculos:latest \
+  --model nanosp \
+  --apdu-port 6699 \
+  --vnc-port 6690 \
+  --display headless \
+  /app/app.elf
+```
+
+Access the simulator at http://localhost:6601
+
+## Modifications from Zondax Source
+
+This app is based on [Zondax ledger-cosmos](https://github.com/Zondax/ledger-cosmos) v2.32.1 with minimal modifications:
+
+### Changes to `ledger-cosmos/app/Makefile`
+
+**Lines 64-67** (added Noble configuration):
+```makefile
+else ifeq ($(COIN),NOBLE)
+# Noble BIP-60 configuration - Access BIP-60 Noble addresses
+APPNAME = "Noble60"
+APPPATH = "44'/60'"
+```
+
+This allows building with `COIN=NOBLE` to use the BIP-60 derivation path instead of BIP-118.
+
+**That's it!** No other source code changes were made, ensuring maximum compatibility and security through code reuse.
+
+## Troubleshooting
+
+### Build Issues
+
+**Docker not running:**
+```
+Error: Docker is not running
+```
+→ Start Docker Desktop (macOS/Windows) or `sudo systemctl start docker` (Linux)
+
+**Build produces only 210-byte hex file:**
+```
+Error: app.hex is too small (210 bytes)
+```
+→ This is fixed automatically by the build scripts (git repository initialization)
+
+**Source directory not found:**
+```
+Error: Source directory not found
+```
+→ Run the build script from the repository root directory
+
+### Installation Issues
+
+**Device not detected:**
+→ Make sure your Ledger is unlocked and on the home screen
+
+**Permission denied:**
+→ On Linux, you may need to add udev rules for Ledger devices
+
+**Wrong API level:**
+→ Double-check your firmware version matches the build you're installing
 
 ## Security Considerations
 
-1. **Always backup your recovery phrase** before installing any Ledger application
-2. **Verify checksums** of built binaries before installation
-3. **Test with simulator first** before using on physical device
-4. **Only install on devices you own** and trust
-5. **Keep your firmware updated** via Ledger Live
+1. ✅ **Always backup your recovery phrase** before installing any Ledger app
+2. ✅ **Verify checksums** of pre-built binaries before installation
+3. ✅ **Test with simulator first** if building from source
+4. ✅ **Only install on devices you own** and trust
+5. ✅ **Keep firmware updated** via Ledger Live
+
+## Development
+
+### Running Tests
+
+```bash
+cd ledger-cosmos/app
+make test
+```
+
+### Modifying the Build
+
+1. Edit source files in `ledger-cosmos/app/src/`
+2. Modify build configuration in `ledger-cosmos/app/Makefile`
+3. Update build scripts (`build-api22.sh` or `build-api25.sh`) if needed
+4. Test your changes with the simulator
+5. Build and verify checksums
+
+## Resources
+
+### Official Links
+- **Noble Blockchain**: https://nobleassets.xyz
+- **Noble Documentation**: https://docs.initia.xyz
+- **Zondax ledger-cosmos**: https://github.com/Zondax/ledger-cosmos
+- **Ledger Developer Docs**: https://developers.ledger.com
+
+### Support
+- GitHub Issues: https://github.com/initia-labs/noble60-ledger-app/issues
+- Noble Community: [Join Noble Discord](https://discord.gg/noble)
 
 ## License
 
-This build system is provided as-is. The ledger-cosmos source code is licensed under Apache 2.0. See the source repository for details.
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+
+The underlying [Zondax ledger-cosmos](https://github.com/Zondax/ledger-cosmos) source code is also licensed under Apache License 2.0.
 
 ## Disclaimer
 
-This software is provided "as-is" without warranty of any kind. Always backup your recovery phrase and test with small amounts first. The developers are not responsible for any loss of funds.
+This software is provided "as-is" without warranty of any kind, express or implied. Always:
+- Backup your recovery phrase
+- Test with small amounts first
+- Verify you understand the risks of using Ledger apps
+
+The developers are not responsible for any loss of funds. Use at your own risk.
 
 ---
 
-**Build Date:** 2025-12-12
 **App Version:** 2.32.1
-**Supported Devices:** Ledger Nano S Plus
+**Based on:** Zondax ledger-cosmos v2.32.1
+**Last Updated:** December 2024
+**Target Device:** Ledger Nano S Plus
 **Supported Firmware:** 1.3.1, 1.3.2, 1.5.0
