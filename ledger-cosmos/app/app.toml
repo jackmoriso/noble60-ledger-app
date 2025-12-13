@@ -1,0 +1,10 @@
+name = "Noble60"
+version = "2.32.1"
+
+[0x33100004] #NanoSP
+icon = "nanox_icon.gif"
+flags = "0x200"
+derivationPath = {curves = ["secp256k1"], paths = ["44'/60'"]}
+binary = "output/app_s2.elf"
+dataSize = 64
+apiLevel = "24"
