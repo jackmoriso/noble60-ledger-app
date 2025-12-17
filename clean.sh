@@ -44,13 +44,13 @@ echo ""
 
 cd "${APP_DIR}"
 
-# Run make clean
+# Run make clean (suppress BOLOS_SDK error since we'll clean manually anyway)
 if [ -f "Makefile" ]; then
-    echo -e "${YELLOW}Running make clean...${NC}"
-    make clean 2>&1 || true
-    echo -e "${GREEN}✅ Make clean completed${NC}"
+    echo -e "${YELLOW}Running make clean (if SDK is available)...${NC}"
+    make clean 2>/dev/null || echo -e "${YELLOW}   Skipped (SDK not in environment)${NC}"
+    echo -e "${GREEN}✅ Cleaning with manual directory removal${NC}"
 else
-    echo -e "${YELLOW}⚠️  Makefile not found, skipping make clean${NC}"
+    echo -e "${YELLOW}⚠️  Makefile not found, using manual cleanup${NC}"
 fi
 
 # Clean common build directories
