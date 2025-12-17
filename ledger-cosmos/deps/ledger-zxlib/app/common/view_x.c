@@ -35,8 +35,9 @@
 
 #if defined(TARGET_NANOX) || defined(TARGET_NANOS2)
 
-void h_expert_toggle();
-void h_expert_update();
+// Expert mode functions disabled - causes freeze
+// void h_expert_toggle();
+// void h_expert_update();
 void h_review_loop_start();
 void h_review_loop_inside();
 void h_review_loop_end();
@@ -52,7 +53,8 @@ uint8_t flow_inside_loop;
 
 
 UX_STEP_NOCB(ux_idle_flow_1_step, pbb, { &C_icon_app, MENU_MAIN_APP_LINE1, viewdata.key,});
-UX_STEP_CB_INIT(ux_idle_flow_2_step, bn,  h_expert_update(), h_expert_toggle(), { "Expert mode:", viewdata.value, });
+// Expert mode disabled - causes freeze
+// UX_STEP_CB_INIT(ux_idle_flow_2_step, bn,  h_expert_update(), h_expert_toggle(), { "Expert mode:", viewdata.value, });
 UX_STEP_NOCB(ux_idle_flow_3_step, bn, { APPVERSION_LINE1, APPVERSION_LINE2, });
 
 #ifdef APP_SECRET_MODE_ENABLED
@@ -66,7 +68,7 @@ UX_STEP_CB(ux_idle_flow_6_step, pb, os_sched_exit(-1), { &C_icon_dashboard, "Qui
 
 const ux_flow_step_t *const ux_idle_flow [] = {
   &ux_idle_flow_1_step,
-  &ux_idle_flow_2_step,
+  // &ux_idle_flow_2_step,  // Expert mode disabled
   &ux_idle_flow_3_step,
   &ux_idle_flow_4_step,
   &ux_idle_flow_5_step,
@@ -194,6 +196,8 @@ max_char_display get_max_char_per_line() {
     return MAX_CHARS_PER_VALUE1_LINE;
 }
 
+// Expert mode functions disabled - causes freeze
+/*
 void h_expert_toggle() {
     app_mode_set_expert(!app_mode_expert());
     ux_flow_init(0, ux_idle_flow, &ux_idle_flow_2_step);
@@ -205,6 +209,7 @@ void h_expert_update() {
         snprintf(viewdata.value, MAX_CHARS_PER_VALUE1_LINE, "enabled");
     }
 }
+*/
 
 #ifdef APP_SECRET_MODE_ENABLED
 void h_secret_click() {

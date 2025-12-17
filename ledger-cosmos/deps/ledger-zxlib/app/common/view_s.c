@@ -34,8 +34,9 @@
 #define BAGL_HEIGHT 32
 #define BAGL_WIDTH_MARGIN 10
 
-void h_expert_toggle();
-void h_expert_update();
+// Expert mode functions disabled - causes freeze
+// void h_expert_toggle();
+// void h_expert_update();
 void h_review_button_left();
 void h_review_button_right();
 void h_review_button_both();
@@ -55,7 +56,8 @@ void os_exit(uint32_t id) {
 
 const ux_menu_entry_t menu_main[] = {
     {NULL, NULL, 0, &C_icon_app, MENU_MAIN_APP_LINE1, viewdata.key, 33, 12},
-    {NULL, h_expert_toggle, 0, &C_icon_app, "Expert mode:", viewdata.value, 33, 12},
+    // Expert mode disabled - causes freeze
+    // {NULL, h_expert_toggle, 0, &C_icon_app, "Expert mode:", viewdata.value, 33, 12},
     {NULL, NULL, 0, &C_icon_app, APPVERSION_LINE1, APPVERSION_LINE2, 33, 12},
 
     {NULL,
@@ -249,7 +251,7 @@ void view_idle_show_impl(uint8_t item_idx, char *statusString) {
     } else {
         snprintf(viewdata.key, MAX_CHARS_PER_VALUE_LINE, "%s", statusString);
     }
-    h_expert_update();
+    // h_expert_update();  // Expert mode disabled
     UX_MENU_DISPLAY(item_idx, menu_main, NULL);
 }
 
@@ -263,10 +265,13 @@ void view_error_show_impl() {
     UX_DISPLAY(view_error, view_prepro);
 }
 
+// Expert mode functions disabled - causes freeze
+/*
 void h_expert_toggle() {
     app_mode_set_expert(!app_mode_expert());
     view_idle_show(1, NULL);
 }
+*/
 
 #ifdef APP_SECRET_MODE_ENABLED
 void h_secret_click() {
@@ -288,12 +293,14 @@ void h_secret_click() {
 }
 #endif
 
+/*
 void h_expert_update() {
     snprintf(viewdata.value, MAX_CHARS_PER_VALUE_LINE, "disabled");
     if (app_mode_expert()) {
         snprintf(viewdata.value, MAX_CHARS_PER_VALUE_LINE, "enabled");
     }
 }
+*/
 
 void view_review_show_impl() {
     zemu_log_stack("view_review_show_impl");

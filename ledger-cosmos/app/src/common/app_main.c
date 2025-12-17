@@ -101,10 +101,10 @@ void extractHDPath(uint32_t rx, uint32_t offset) {
 
     MEMCPY(hdPath, G_io_apdu_buffer + offset, sizeof(uint32_t) * HDPATH_LEN_DEFAULT);
 
-    // Check values
+    // Check values - only enforce BIP44 purpose (44') and coin type (60')
+    // Allow flexible account, change, and address indices
     if (hdPath[0] != HDPATH_0_DEFAULT ||
-        hdPath[1] != HDPATH_1_DEFAULT ||
-        hdPath[3] != HDPATH_3_DEFAULT) {
+        hdPath[1] != HDPATH_1_DEFAULT) {
         THROW(APDU_CODE_DATA_INVALID);
     }
 
